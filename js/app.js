@@ -57,7 +57,7 @@ function createApplication(company, role) {
     company,
     role,
     status: "AGGIUNTO",
-    createAt: Date.now()
+    createdAt: Date.now()
   };
 }
 
@@ -73,11 +73,7 @@ function renderError() {
 function renderList() {
   list.innerHTML = "";
   let liCount = state.applications.length;
-  if (liCount == 0) {
-    return;
-  } else {
-
-    for (let i = 0; i < liCount; i++) {
+  for (let i = 0; i < liCount; i++) {
       let li = document.createElement("li");
       li.textContent = `${app.company} - ${app.role}`;
       list.appendChild(li);
@@ -85,5 +81,5 @@ function renderList() {
     }
     
   }
-}
+
 
