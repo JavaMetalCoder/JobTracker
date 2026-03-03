@@ -3,12 +3,11 @@
 const appForm = document.querySelector("#appForm");
 const companyInput = document.querySelector("#companyInput");
 const roleInput = document.querySelector("#roleInput");
-const submitBtn = document.querySelector("#submitBtn");
 const errorBox = document.querySelector("#errorBox");
 /****************************/ 
 const list = document.querySelector("#list");
 
-const state = {
+let state = {
   applications: [],
   ui: {
     error: ""
@@ -20,6 +19,7 @@ const state = {
 /***START APP***/
 
 init();
+render();
 
 
 /**FUNCTIONS**/
@@ -29,22 +29,31 @@ function init() {
   
 }
 
+function setState(patch) {
+  state = {...state, ...patch};
+  render();
+}
+
 function submitForm(event) {
   event.preventDefault();
   let inputUtenteCompany = companyInput.value.trim();
   let inputUtenteRole = roleInput.value.trim();
   
 
-  if (inputUtenteCompany == "" || inputUtenteRole == "") {
-    state.ui.error = "Campo Vuoto";
-    render();
+  if (inputUtenteCompany === "" || inputUtenteRole === "") {
+    setState({
+      ui: { ...state.ui, error: "Campo Vuoto"}
+    });
     return;
 
   } else {
-    state.ui.error = "";
+    
     const app = createApplication(inputUtenteCompany, inputUtenteRole);
-    state.applications.push(app);
-    render();
+    setState({
+      ui: {...state.ui, error: ""},
+      applications: [...state.applications, app]
+    });
+    appForm.reset();
 
 
   }
@@ -53,10 +62,10 @@ function submitForm(event) {
 
 function createApplication(company, role) {
   return {
-    id: crypto.randomUUID(),
+    id: crypto.randomUUID() ?? String(Date.now()),
     company,
     role,
-    status: "AGGIUNTO",
+    status: "APPLIED",
     createdAt: Date.now()
   };
 }
@@ -67,13 +76,22 @@ function render() {
 }
 
 function renderError() {
+  
+  if(state.ui.error === "") {
+    errorBox.innerHTML = "";
+    errorBox.removeAttribute("role");
+    
+  } else {
+    errorBox.textContent = state.ui.error;
+    errorBox.setAttribute("role", "alert");
+  }
+
 
 }
 
 function renderList() {
   list.innerHTML = "";
-  let liCount = state.applications.length;
-  for (let i = 0; i < liCount; i++) {
+  for (const app of state.applications) {
       let li = document.createElement("li");
       li.textContent = `${app.company} - ${app.role}`;
       list.appendChild(li);
@@ -81,5 +99,7 @@ function renderList() {
     }
     
   }
+
+  
 
 
